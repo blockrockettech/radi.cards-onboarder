@@ -70,6 +70,29 @@
                   <label class="custom-file-label" for="lowResImage">Choose token metadata image...</label>
                 </div>
               </div>
+
+              <p v-if="isImgInitial">
+                Uploading file...
+              </p>
+              <p v-if="isImgSaving">
+                Saving to IPFS...
+              </p>
+              <div v-if="isImgSuccess" class="row">
+                <div class="col">
+                  Successfully saved to IPFS
+                  <br/>
+                  <a target="_blank"
+                     :href="'https://ipfs.infura.io/ipfs/' + imageUpload.ipfsHash">{{imageUpload.ipfsHash}}</a>
+                </div>
+                <div class="col">
+                  <img :src="'https://ipfs.infura.io/ipfs/' + imageUpload.ipfsHash"
+                       class="img-thumbnail" style="max-height: 100px"/>
+                </div>
+              </div>
+              <p v-if="isImgFailed">
+                Failed: {{ imageUpload.uploadError }}
+              </p>
+
             </div>
 
           </div>
@@ -114,43 +137,13 @@
               </div>
             </div>
           </div>
-
-
-          <!--<hr/>-->
-
-          <!--<input class="btn btn-primary"-->
-          <!--type="button"-->
-          <!--v-on:click="createEdition" value="Create Edition"/>-->
-
         </form>
 
       </div>
       <div class="col-6">
         <div>
-          <pre class="border" v-if="ipfsData.artist">{{ipfsData.artist.ethAddress[0]}}</pre>
           <h5>IPFS</h5>
           <pre class="border">{{tokenMetadata()}}</pre>
-          <p v-if="isImgInitial">
-            Uploading file...
-          </p>
-          <p v-if="isImgSaving">
-            Saving to IPFS...
-          </p>
-          <div v-if="isImgSuccess" class="row">
-            <div class="col">
-              Successfully saved to IPFS
-              <br/>
-              <a target="_blank"
-                 :href="'https://ipfs.infura.io/ipfs/' + imageUpload.ipfsHash">{{imageUpload.ipfsHash}}</a>
-            </div>
-            <div class="col">
-              <img :src="'https://ipfs.infura.io/ipfs/' + imageUpload.ipfsHash"
-                   class="img-thumbnail" style="max-height: 100px"/>
-            </div>
-          </div>
-          <p v-if="isImgFailed">
-            Failed: {{ imageUpload.uploadError }}
-          </p>
 
           <input type="button"
                  class="btn btn-primary"
@@ -190,7 +183,6 @@
 
   import {mapGetters, mapState} from 'vuex';
   import * as _ from 'lodash';
-  import editionTypes from '../data/editionTypes';
   import IPFS from 'ipfs-api';
   import Web3 from 'web3';
   import Vue from 'vue';
@@ -207,7 +199,6 @@
     components: {},
     data() {
       return {
-        editionTypes,
         finalIpfsUpload: {
           ipfsHash: null,
           uploadError: null,
